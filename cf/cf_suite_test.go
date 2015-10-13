@@ -1,4 +1,4 @@
-package cfapi_test
+package cf_test
 
 import (
 	"io/ioutil"

@@ -1,5 +1,5 @@
-package cfapi
+package cf
 
-type cfError struct {
+type Error struct {
 	Description string `json:"description"`
 }

@@ -1,4 +1,4 @@
-package cfapi_test
+package cf_test
 
 import (
 	"encoding/json"
@@ -7,22 +7,22 @@ import (
 	"net/http/httptest"
 
 	"github.com/cloudfoundry/cli/cf/api/resources"
-	"github.com/tscolari/cfapi"
+	"github.com/tscolari/cfapi/cf"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("CfClient", func() {
+var _ = Describe("Client", func() {
 	var server *httptest.Server
 	var handlerFunc http.Handler
-	var client *cfapi.CfClient
+	var client *cf.Client
 	var response resources.ApplicationResource
 
 	JustBeforeEach(func() {
 		response = resources.ApplicationResource{}
 		server = httptest.NewServer(handlerFunc)
-		client = cfapi.NewCfClient(server.URL, "my-access-token", "my-refresh-token")
+		client = cf.NewClient(server.URL, "my-access-token", "my-refresh-token")
 	})
 
 	AfterEach(func() {
@@ -65,7 +65,7 @@ var _ = Describe("CfClient", func() {
 
 			Context("when cloud controller can't be reached", func() {
 				JustBeforeEach(func() {
-					client = cfapi.NewCfClient("http://invalid.example.com", "my-access-token", "my-refresh-token")
+					client = cf.NewClient("http://invalid.example.com", "my-access-token", "my-refresh-token")
 				})
 
 				It("returns the correct error message", func() {

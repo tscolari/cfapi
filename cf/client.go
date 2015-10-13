@@ -1,4 +1,4 @@
-package cfapi
+package cf
 
 import (
 	"encoding/json"
@@ -10,15 +10,15 @@ import (
 	"strings"
 )
 
-type CfClient struct {
+type Client struct {
 	accessToken  string
 	refreshToken string
 	endpoint     string
 	client       *http.Client
 }
 
-func NewCfClient(endpoint, accessToken, refreshToken string) *CfClient {
-	return &CfClient{
+func NewClient(endpoint, accessToken, refreshToken string) *Client {
+	return &Client{
 		accessToken:  accessToken,
 		refreshToken: refreshToken,
 		endpoint:     endpoint,
@@ -26,23 +26,23 @@ func NewCfClient(endpoint, accessToken, refreshToken string) *CfClient {
 	}
 }
 
-func (c *CfClient) Get(path string, response interface{}) error {
+func (c *Client) Get(path string, response interface{}) error {
 	return c.fetch("GET", path, nil, response)
 }
 
-func (c *CfClient) Put(path string, options map[string]string, response interface{}) error {
+func (c *Client) Put(path string, options map[string]string, response interface{}) error {
 	return c.fetch("PUT", path, options, response)
 }
 
-func (c *CfClient) Post(path string, options map[string]string, response interface{}) error {
+func (c *Client) Post(path string, options map[string]string, response interface{}) error {
 	return c.fetch("POST", path, options, response)
 }
 
-func (c *CfClient) Delete(path string, options map[string]string) error {
+func (c *Client) Delete(path string, options map[string]string) error {
 	return c.fetch("DELETE", path, options, nil)
 }
 
-func (c *CfClient) fetch(method, path string, options map[string]string, response interface{}) error {
+func (c *Client) fetch(method, path string, options map[string]string, response interface{}) error {
 	req, err := c.createRequest(method, path, options)
 	if err != nil {
 		return err
@@ -55,7 +55,7 @@ func (c *CfClient) fetch(method, path string, options map[string]string, respons
 	return c.parseResponse(resp, response)
 }
 
-func (c *CfClient) createRequest(method, path string, body map[string]string) (*http.Request, error) {
+func (c *Client) createRequest(method, path string, body map[string]string) (*http.Request, error) {
 	var requestBody io.Reader
 
 	if body != nil {
@@ -76,7 +76,7 @@ func (c *CfClient) createRequest(method, path string, body map[string]string) (*
 	return req, err
 }
 
-func (c *CfClient) executeRequest(request *http.Request) (*http.Response, error) {
+func (c *Client) executeRequest(request *http.Request) (*http.Response, error) {
 	resp, err := c.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to connect: %s", err.Error())
@@ -85,7 +85,7 @@ func (c *CfClient) executeRequest(request *http.Request) (*http.Response, error)
 	return resp, nil
 }
 
-func (c *CfClient) parseResponse(resp *http.Response, returnObj interface{}) error {
+func (c *Client) parseResponse(resp *http.Response, returnObj interface{}) error {
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -93,7 +93,7 @@ func (c *CfClient) parseResponse(resp *http.Response, returnObj interface{}) err
 	}
 
 	if resp.StatusCode >= 400 {
-		var errResp cfError
+		var errResp Error
 		err = json.Unmarshal(body, &errResp)
 		if err != nil {
 			return fmt.Errorf("CF Returned an error: %s", body)
