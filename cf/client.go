@@ -11,18 +11,16 @@ import (
 )
 
 type Client struct {
-	accessToken  string
-	refreshToken string
-	endpoint     string
-	client       *http.Client
+	accessToken string
+	endpoint    string
+	client      *http.Client
 }
 
-func NewClient(endpoint, accessToken, refreshToken string) *Client {
+func NewClient(endpoint, accessToken string) *Client {
 	return &Client{
-		accessToken:  accessToken,
-		refreshToken: refreshToken,
-		endpoint:     endpoint,
-		client:       &http.Client{},
+		accessToken: accessToken,
+		endpoint:    endpoint,
+		client:      &http.Client{},
 	}
 }
 

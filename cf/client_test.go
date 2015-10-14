@@ -22,7 +22,7 @@ var _ = Describe("Client", func() {
 	JustBeforeEach(func() {
 		response = resources.ApplicationResource{}
 		server = httptest.NewServer(handlerFunc)
-		client = cf.NewClient(server.URL, "my-access-token", "my-refresh-token")
+		client = cf.NewClient(server.URL, "my-access-token")
 	})
 
 	AfterEach(func() {
@@ -65,7 +65,7 @@ var _ = Describe("Client", func() {
 
 			Context("when cloud controller can't be reached", func() {
 				JustBeforeEach(func() {
-					client = cf.NewClient("http://invalid.example.com", "my-access-token", "my-refresh-token")
+					client = cf.NewClient("http://invalid.example.com", "my-access-token")
 				})
 
 				It("returns the correct error message", func() {
