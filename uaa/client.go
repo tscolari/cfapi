@@ -11,6 +11,11 @@ import (
 	"strings"
 )
 
+type UAAClient interface {
+	Authenticate(username, password string) (*Tokens, error)
+	RefreshToken(refreshToken string) (*Tokens, error)
+}
+
 type Client struct {
 	endpoint string
 }

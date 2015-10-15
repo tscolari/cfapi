@@ -8,7 +8,17 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/tscolari/cfapi/uaa"
 )
+
+type CFClient interface {
+	Get(path string, response interface{}) error
+	Put(path string, options map[string]string, response interface{}) error
+	Post(path string, options map[string]string, response interface{}) error
+	Delete(path string, options map[string]string) error
+	CurrentTokens() uaa.Tokens
+}
 
 type Client struct {
 	accessToken string
@@ -38,6 +48,12 @@ func (c *Client) Post(path string, options map[string]string, response interface
 
 func (c *Client) Delete(path string, options map[string]string) error {
 	return c.fetch("DELETE", path, options, nil)
+}
+
+func (c *Client) CurrentTokens() uaa.Tokens {
+	return uaa.Tokens{
+		AccessToken: c.accessToken,
+	}
 }
 
 func (c *Client) fetch(method, path string, options map[string]string, response interface{}) error {
