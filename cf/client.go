@@ -90,13 +90,18 @@ func (c *Client) parseResponse(resp *http.Response, returnObj interface{}) error
 		return err
 	}
 
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode >= 500 {
 		var errResp Error
 		err = json.Unmarshal(body, &errResp)
 		if err != nil {
-			return fmt.Errorf("CF Returned an error: %s", body)
+			return fmt.Errorf("%s: %s", http.StatusText(resp.StatusCode), body)
 		}
+
 		return errors.New(strings.TrimSpace(errResp.Description))
+	}
+
+	if resp.StatusCode >= 400 {
+		return errors.New(http.StatusText(resp.StatusCode))
 	}
 
 	if returnObj == nil {

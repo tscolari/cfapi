@@ -63,6 +63,19 @@ var _ = Describe("Client", func() {
 				})
 			})
 
+			Context("when there's an authorization error", func() {
+				BeforeEach(func() {
+					handlerFunc = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						http.Error(w, ``, http.StatusUnauthorized)
+					})
+				})
+
+				It("returns the correct error message", func() {
+					err := client.Get("/app/123", &response)
+					Expect(err).To(MatchError("Unauthorized"))
+				})
+			})
+
 			Context("when cloud controller can't be reached", func() {
 				JustBeforeEach(func() {
 					client = cf.NewClient("http://invalid.example.com", "my-access-token")
