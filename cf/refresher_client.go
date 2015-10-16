@@ -4,9 +4,10 @@ import "github.com/tscolari/cfapi/uaa"
 
 type RefresherClient struct {
 	Client
-	cfEndpoint string
-	tokens     uaa.Tokens
-	uaaClient  uaa.UAAClient
+	cfEndpoint     string
+	tokens         uaa.Tokens
+	uaaClient      uaa.UAAClient
+	OnTokenRefresh func(newTokens uaa.Tokens)
 }
 
 func NewRefresherClient(cfEndpoint string, tokens uaa.Tokens, uaaClient uaa.UAAClient) *RefresherClient {
@@ -35,10 +36,6 @@ func (c *RefresherClient) Delete(path string, options map[string]string) error {
 	return c.fetch("DELETE", path, options, nil)
 }
 
-func (c *RefresherClient) CurrentTokens() uaa.Tokens {
-	return c.tokens
-}
-
 func (c *RefresherClient) fetch(method, path string, options map[string]string, response interface{}) error {
 	err := c.Client.fetch(method, path, options, response)
 	if err != nil && err.Error() == "Unauthorized" {
@@ -59,6 +56,10 @@ func (c *RefresherClient) refreshTokens() error {
 
 	c.tokens = *tokens
 	c.Client = *NewClient(c.cfEndpoint, tokens.AccessToken)
+
+	if c.OnTokenRefresh != nil {
+		c.OnTokenRefresh(c.tokens)
+	}
 
 	return nil
 }

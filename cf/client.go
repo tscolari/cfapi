@@ -12,14 +12,6 @@ import (
 	"github.com/tscolari/cfapi/uaa"
 )
 
-type CFClient interface {
-	Get(path string, response interface{}) error
-	Put(path string, options map[string]string, response interface{}) error
-	Post(path string, options map[string]string, response interface{}) error
-	Delete(path string, options map[string]string) error
-	CurrentTokens() uaa.Tokens
-}
-
 type Client struct {
 	accessToken string
 	endpoint    string
