@@ -6,17 +6,17 @@ type RefresherClient struct {
 	Client
 	cfEndpoint     string
 	tokens         uaa.Tokens
-	uaaClient      uaa.UAAClient
+	uaaRefresher   uaa.Refresher
 	OnTokenRefresh func(newTokens uaa.Tokens)
 }
 
-func NewRefresherClient(cfEndpoint string, tokens uaa.Tokens, uaaClient uaa.UAAClient) *RefresherClient {
+func NewRefresherClient(cfEndpoint string, tokens uaa.Tokens, uaaRefresher uaa.Refresher) *RefresherClient {
 	cfClient := *NewClient(cfEndpoint, tokens.AccessToken)
 	return &RefresherClient{
-		Client:     cfClient,
-		cfEndpoint: cfEndpoint,
-		tokens:     tokens,
-		uaaClient:  uaaClient,
+		Client:       cfClient,
+		cfEndpoint:   cfEndpoint,
+		tokens:       tokens,
+		uaaRefresher: uaaRefresher,
 	}
 }
 
@@ -49,7 +49,7 @@ func (c *RefresherClient) fetch(method, path string, options map[string]string, 
 }
 
 func (c *RefresherClient) refreshTokens() error {
-	tokens, err := c.uaaClient.RefreshToken(c.tokens.RefreshToken)
+	tokens, err := c.uaaRefresher.RefreshToken(c.tokens.RefreshToken)
 	if err != nil {
 		return err
 	}

@@ -11,8 +11,7 @@ import (
 	"strings"
 )
 
-type UAAClient interface {
-	Authenticate(username, password string) (*Tokens, error)
+type Refresher interface {
 	RefreshToken(refreshToken string) (*Tokens, error)
 }
 
